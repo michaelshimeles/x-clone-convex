@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function EditProfile() {
   const { isAuthenticated, isLoading } = useConvexAuth();
@@ -27,7 +28,7 @@ export default function EditProfile() {
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  
+
   // File upload states
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -75,18 +76,18 @@ export default function EditProfile() {
     try {
       // Generate upload URL
       const uploadUrl = await generateUploadUrl();
-      
+
       // Upload file
       const result = await fetch(uploadUrl, {
         method: "POST",
         headers: { "Content-Type": file.type },
         body: file,
       });
-      
+
       if (!result.ok) {
         throw new Error("Upload failed");
       }
-      
+
       const { storageId } = await result.json();
       return storageId;
     } catch (error) {
@@ -103,15 +104,15 @@ export default function EditProfile() {
         setMessage({ type: "error", text: "Please select an image file" });
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setMessage({ type: "error", text: "Image must be smaller than 5MB" });
         return;
       }
-      
+
       setAvatarFile(file);
-      
+
       // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -130,15 +131,15 @@ export default function EditProfile() {
         setMessage({ type: "error", text: "Please select an image file" });
         return;
       }
-      
+
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         setMessage({ type: "error", text: "Banner image must be smaller than 10MB" });
         return;
       }
-      
+
       setBannerFile(file);
-      
+
       // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -207,17 +208,19 @@ export default function EditProfile() {
         website: formData.website.trim() || undefined,
         avatarUrl: !avatarFile ? (formData.avatarUrl.trim() || undefined) : undefined,
         bannerUrl: !bannerFile ? (formData.bannerUrl.trim() || undefined) : undefined,
-        avatarStorageId,
-        bannerStorageId,
+        avatarStorageId: avatarStorageId as Id<"_storage"> | undefined,
+        bannerStorageId: bannerStorageId as Id<"_storage"> | undefined,
       });
 
       setMessage({ type: "success", text: "Profile updated successfully!" });
-      
+
       // Redirect to the new username URL after a short delay
       setTimeout(() => {
         router.push(`/profile/${result.newUsername || formData.username}`);
       }, 1500);
 
+      // @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setMessage({ type: "error", text: error.message || "Failed to update profile" });
     } finally {
@@ -229,7 +232,7 @@ export default function EditProfile() {
     try {
       new URL(string);
       return true;
-    } catch (_) {
+    } catch {
       return false;
     }
   };
@@ -238,12 +241,12 @@ export default function EditProfile() {
     <div className="min-h-screen bg-background text-foreground font-mono">
       <div className="max-w-7xl mx-auto flex">
         <Sidebar />
-        
+
         <main className="flex-1 border-r border-foreground/20 max-w-2xl">
           {/* Header */}
           <div className="sticky top-0 bg-background/95 backdrop-blur border-b border-foreground/20 p-4">
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => router.back()}
                 className="hover:bg-foreground/10 p-2 -m-2 transition-colors"
               >
@@ -261,13 +264,13 @@ export default function EditProfile() {
             {/* Profile Preview */}
             <div className="mb-8 border border-foreground/20 p-4">
               <h2 className="text-sm font-bold mb-4 text-foreground/60">PREVIEW</h2>
-              
+
               {/* Banner Preview */}
               <div className="relative h-32 bg-gradient-to-b from-foreground/20 to-background border border-foreground/20 mb-4 overflow-hidden">
                 {bannerPreview && (
-                  <img 
-                    src={bannerPreview} 
-                    alt="Banner preview" 
+                  <img
+                    src={bannerPreview}
+                    alt="Banner preview"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
@@ -285,9 +288,9 @@ export default function EditProfile() {
               <div className="flex items-start gap-4">
                 <div className="relative w-16 h-16 border border-foreground/40 bg-foreground/10 flex items-center justify-center text-xl flex-shrink-0 overflow-hidden">
                   {avatarPreview ? (
-                    <img 
-                      src={avatarPreview} 
-                      alt="Avatar preview" 
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar preview"
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = 'none';
@@ -514,11 +517,10 @@ export default function EditProfile() {
 
               {/* Message Display */}
               {message && (
-                <div className={`p-3 border text-sm ${
-                  message.type === "success" 
+                <div className={`p-3 border text-sm ${message.type === "success"
                     ? "border-green-500/50 bg-green-500/10 text-green-400"
                     : "border-red-500/50 bg-red-500/10 text-red-400"
-                }`}>
+                  }`}>
                   {message.text}
                 </div>
               )}
@@ -538,10 +540,10 @@ export default function EditProfile() {
                   disabled={isUpdating || isUploadingAvatar || isUploadingBanner || !formData.displayName.trim() || !formData.username.trim()}
                   className="px-6 py-2 bg-foreground text-background text-sm disabled:opacity-50 hover:bg-foreground/90 transition-colors"
                 >
-                  {isUpdating ? "[ SAVING... ]" : 
-                   isUploadingAvatar ? "[ UPLOADING AVATAR... ]" :
-                   isUploadingBanner ? "[ UPLOADING BANNER... ]" :
-                   "[ SAVE CHANGES ]"}
+                  {isUpdating ? "[ SAVING... ]" :
+                    isUploadingAvatar ? "[ UPLOADING AVATAR... ]" :
+                      isUploadingBanner ? "[ UPLOADING BANNER... ]" :
+                        "[ SAVE CHANGES ]"}
                 </button>
               </div>
             </form>
@@ -574,7 +576,7 @@ function Sidebar() {
         <Link href="/feed" className="text-2xl font-bold px-3 block">
           [ X ]
         </Link>
-        
+
         <div className="space-y-2">
           {navItems.map((item) => (
             <Link

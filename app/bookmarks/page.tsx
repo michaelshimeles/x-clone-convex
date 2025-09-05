@@ -1,20 +1,20 @@
 "use client";
 
-import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import PostContent from "@/components/PostContent";
+import PostModal from "@/components/PostModal";
+import QuotedPost from "@/components/QuotedPost";
 import { api } from "@/convex/_generated/api";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Link from "next/link";
-import { useAuthActions } from "@convex-dev/auth/react";
-import PostModal from "@/components/PostModal";
-import PostContent from "@/components/PostContent";
-import QuotedPost from "@/components/QuotedPost";
 
 export default function BookmarksPage() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const router = useRouter();
   const [showPostModal, setShowPostModal] = useState(false);
-  const bookmarks = useQuery(api.posts.getUserBookmarks);
+  const bookmarks = useQuery(api.posts.getUserBookmarks, { });
 
   // Redirect if not authenticated
   if (!isAuthenticated && !isLoading) {
@@ -61,7 +61,7 @@ export default function BookmarksPage() {
                   </div>
                   <h2 className="text-lg font-bold mb-2">SAVE POSTS FOR LATER</h2>
                   <p className="text-sm max-w-md mx-auto leading-relaxed">
-                    Don't let the good posts fly away! Bookmark posts to easily find them later. 
+                    Don&apos;t let the good posts fly away! Bookmark posts to easily find them later. 
                     Click the bookmark icon on any post to save it here.
                   </p>
                 </div>
@@ -126,9 +126,9 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
                 <span className="w-6 text-center">{item.icon}</span>
                 <span>{item.label}</span>
               </div>
-              {item.badge > 0 && (
+              {item.badge && item.badge > 0 && (
                 <span className="bg-foreground text-background text-xs px-2 py-1 rounded-full min-w-[20px] text-center">
-                  {item.badge > 99 ? "99+" : item.badge}
+                  {item.badge && item.badge > 99 ? "99+" : item.badge}
                 </span>
               )}
             </Link>
@@ -161,6 +161,7 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function BookmarkedPostItem({ post }: { post: any }) {
   const router = useRouter();
   const [liked, setLiked] = useState(post.liked);

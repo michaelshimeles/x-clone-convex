@@ -1,13 +1,14 @@
 "use client";
 
-import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useAuthActions } from "@convex-dev/auth/react";
-import PostModal from "@/components/PostModal";
 import PostContent from "@/components/PostContent";
+import PostModal from "@/components/PostModal";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function NotificationsPage() {
   const { isAuthenticated, isLoading } = useConvexAuth();
@@ -15,7 +16,7 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<"all" | "mentions">("all");
   const [showPostModal, setShowPostModal] = useState(false);
 
-  const notifications = useQuery(api.notifications.getUserNotifications);
+  const notifications = useQuery(api.notifications.getUserNotifications, {});
   const markAllAsRead = useMutation(api.notifications.markAllNotificationsAsRead);
   const markAsRead = useMutation(api.notifications.markNotificationAsRead);
 
@@ -39,7 +40,7 @@ export default function NotificationsPage() {
     );
   }
 
-  const filteredNotifications = filter === "all" 
+  const filteredNotifications = filter === "all"
     ? notifications?.notifications || []
     : notifications?.notifications?.filter(n => n.type === "mention") || [];
 
@@ -47,12 +48,12 @@ export default function NotificationsPage() {
     <div className="min-h-screen bg-background text-foreground font-mono">
       <div className="max-w-7xl mx-auto flex">
         <Sidebar onPostClick={() => setShowPostModal(true)} />
-        
+
         <main className="flex-1 border-r border-foreground/20">
           {/* Header */}
           <div className="sticky top-0 bg-background/95 backdrop-blur border-b border-foreground/20 p-4">
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => router.back()}
                 className="hover:bg-foreground/10 p-2 -m-2 transition-colors"
               >
@@ -72,21 +73,19 @@ export default function NotificationsPage() {
             <div className="flex">
               <button
                 onClick={() => setFilter("all")}
-                className={`flex-1 py-3 text-sm hover:bg-foreground/5 transition-colors ${
-                  filter === "all"
-                    ? "border-b-2 border-foreground font-bold"
-                    : "text-foreground/60"
-                }`}
+                className={`flex-1 py-3 text-sm hover:bg-foreground/5 transition-colors ${filter === "all"
+                  ? "border-b-2 border-foreground font-bold"
+                  : "text-foreground/60"
+                  }`}
               >
                 ALL
               </button>
               <button
                 onClick={() => setFilter("mentions")}
-                className={`flex-1 py-3 text-sm hover:bg-foreground/5 transition-colors ${
-                  filter === "mentions"
-                    ? "border-b-2 border-foreground font-bold"
-                    : "text-foreground/60"
-                }`}
+                className={`flex-1 py-3 text-sm hover:bg-foreground/5 transition-colors ${filter === "mentions"
+                  ? "border-b-2 border-foreground font-bold"
+                  : "text-foreground/60"
+                  }`}
               >
                 MENTIONS
               </button>
@@ -105,7 +104,7 @@ export default function NotificationsPage() {
                     {filter === "all" ? "NO NOTIFICATIONS YET" : "NO MENTIONS YET"}
                   </h2>
                   <p className="text-sm max-w-md mx-auto leading-relaxed">
-                    {filter === "all" 
+                    {filter === "all"
                       ? "When people follow you, like your posts, or interact with your content, you'll see notifications here."
                       : "When people mention you in their posts, you'll see those notifications here."
                     }
@@ -114,8 +113,8 @@ export default function NotificationsPage() {
               </div>
             ) : (
               filteredNotifications.map((notification) => (
-                <NotificationItem 
-                  key={notification._id} 
+                <NotificationItem
+                  key={notification._id}
                   notification={notification}
                   onMarkAsRead={markAsRead}
                 />
@@ -126,9 +125,9 @@ export default function NotificationsPage() {
 
         <RightPanel />
       </div>
-      <PostModal 
-        isOpen={showPostModal} 
-        onClose={() => setShowPostModal(false)} 
+      <PostModal
+        isOpen={showPostModal}
+        onClose={() => setShowPostModal(false)}
       />
     </div>
   );
@@ -155,30 +154,29 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
         <Link href="/feed" className="text-2xl font-bold px-3 block">
           [ X ]
         </Link>
-        
+
         <div className="space-y-2">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center justify-between px-3 py-2 hover:bg-foreground/10 transition-colors text-sm ${
-                item.label === "NOTIFICATIONS" ? "bg-foreground/10 font-bold" : ""
-              }`}
+              className={`flex items-center justify-between px-3 py-2 hover:bg-foreground/10 transition-colors text-sm ${item.label === "NOTIFICATIONS" ? "bg-foreground/10 font-bold" : ""
+                }`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-6 text-center">{item.icon}</span>
                 <span>{item.label}</span>
               </div>
-              {item.badge > 0 && (
+              {item.badge && item.badge > 0 && (
                 <span className="bg-foreground text-background text-xs px-2 py-1 rounded-full min-w-[20px] text-center">
-                  {item.badge > 99 ? "99+" : item.badge}
+                  {item.badge && item.badge > 99 ? "99+" : item.badge}
                 </span>
               )}
             </Link>
           ))}
         </div>
 
-        <button 
+        <button
           onClick={onPostClick}
           className="w-full px-4 py-3 bg-foreground text-background hover:bg-foreground/90 transition-colors text-sm font-bold"
         >
@@ -204,12 +202,14 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
   );
 }
 
-function NotificationItem({ 
-  notification, 
-  onMarkAsRead 
-}: { 
-  notification: any; 
-  onMarkAsRead: (args: { notificationId: string }) => Promise<any>;
+function NotificationItem({
+  notification,
+  onMarkAsRead
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  notification: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onMarkAsRead: (args: { notificationId: Id<"notifications"> }) => Promise<any>;
 }) {
   const router = useRouter();
   const formatTimestamp = (timestamp: number) => {
@@ -238,9 +238,10 @@ function NotificationItem({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getNotificationText = (notification: any) => {
     const actorName = notification.actor?.displayName || "Unknown User";
-    
+
     switch (notification.type) {
       case "follow":
         return `${actorName} followed you`;
@@ -287,10 +288,9 @@ function NotificationItem({
   };
 
   return (
-    <article 
-      className={`p-4 hover:bg-foreground/5 transition-colors cursor-pointer ${
-        !notification.read ? "bg-foreground/10" : ""
-      }`}
+    <article
+      className={`p-4 hover:bg-foreground/5 transition-colors cursor-pointer ${!notification.read ? "bg-foreground/10" : ""
+        }`}
       onClick={handleClick}
     >
       <div className="flex gap-3">
@@ -304,9 +304,9 @@ function NotificationItem({
           <div className="flex items-center gap-3 mb-2">
             <div className="w-8 h-8 border border-foreground/40 flex items-center justify-center text-xs overflow-hidden">
               {notification.actor?.avatarUrl ? (
-                <img 
-                  src={notification.actor.avatarUrl} 
-                  alt="Avatar" 
+                <img
+                  src={notification.actor.avatarUrl}
+                  alt="Avatar"
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none';
@@ -340,7 +340,7 @@ function NotificationItem({
           {/* Post Preview (if applicable) */}
           {notification.post && (
             <div className="border-l-2 border-foreground/20 pl-3 mt-2">
-              <PostContent 
+              <PostContent
                 content={notification.post.content}
                 className="text-sm text-foreground/80 line-clamp-2"
               />
@@ -358,7 +358,6 @@ function NotificationItem({
 }
 
 function RightPanel() {
-  const settings = useQuery(api.notifications.getNotificationSettings);
 
   return (
     <aside className="w-96 p-4 space-y-6">
@@ -403,7 +402,7 @@ function RightPanel() {
       <div className="border border-foreground/20 p-4">
         <h3 className="font-bold text-sm mb-3">ABOUT NOTIFICATIONS</h3>
         <p className="text-xs text-foreground/60 leading-relaxed">
-          Stay updated with all interactions on your posts and profile. 
+          Stay updated with all interactions on your posts and profile.
           Notifications are marked as read automatically when you visit this page.
         </p>
       </div>

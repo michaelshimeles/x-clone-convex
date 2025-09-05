@@ -10,6 +10,8 @@ import ResponsiveLayout from "@/components/shared/ResponsiveLayout";
 import { PostListSkeleton } from "@/components/shared/LoadingSkeletons";
 import { type PostsResponse } from "@/types";
 
+type FeedTab = "for-you" | "following";
+
 export default function Feed() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const router = useRouter();
@@ -43,14 +45,34 @@ export default function Feed() {
 
 
 function MainFeed() {
-  const feedData = useQuery(api.posts.getFeedPosts, { limit: 20 }) as PostsResponse | undefined;
+  const [activeTab, setActiveTab] = useState<FeedTab>("for-you");
+  const feedData = useQuery(
+    activeTab === "following" 
+      ? api.posts.getFeedPosts 
+      : api.posts.getTrendingPosts, 
+    { limit: 20 }
+  ) as PostsResponse | undefined;
   const createPost = useMutation(api.posts.createPost);
   const [isPosting, setIsPosting] = useState(false);
 
   return (
     <>
-      <div className="border-b border-foreground/20 p-4">
-        <h2 className="text-xl font-bold">HOME</h2>
+      <div className="border-b border-foreground/20">
+        <div className="p-4 pb-0">
+          <h2 className="text-xl font-bold mb-4">HOME</h2>
+        </div>
+        <div className="flex border-b border-foreground/20">
+          <TabButton
+            active={activeTab === "for-you"}
+            onClick={() => setActiveTab("for-you")}
+            label="For You"
+          />
+          <TabButton
+            active={activeTab === "following"}
+            onClick={() => setActiveTab("following")}
+            label="Following"
+          />
+        </div>
       </div>
 
       <ComposePost onPost={async (content) => {
@@ -70,8 +92,15 @@ function MainFeed() {
         <div className="divide-y divide-foreground/20">
           {feedData?.posts?.length === 0 ? (
             <div className="p-8 text-center text-foreground/60">
-              <p className="text-sm mb-2">No posts yet</p>
-              <p className="text-xs">Follow some users or create your first post!</p>
+              <p className="text-sm mb-2">
+                {activeTab === "following" ? "No posts from people you follow" : "No trending posts"}
+              </p>
+              <p className="text-xs">
+                {activeTab === "following" 
+                  ? "Follow some users to see their posts here!"
+                  : "Check back later for trending content!"
+                }
+              </p>
             </div>
           ) : (
             feedData?.posts?.map((post) => (
@@ -125,4 +154,17 @@ function ComposePost({ onPost, isPosting }: { onPost: (content: string) => Promi
   );
 }
 
-
+function TabButton({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+        active
+          ? "border-foreground text-foreground"
+          : "border-transparent text-foreground/60 hover:text-foreground/80"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}

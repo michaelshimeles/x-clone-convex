@@ -1,15 +1,14 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import Link from "next/link";
-import { useState } from "react";
-import PostModal from "@/components/PostModal";
 import PostItem from "@/components/PostItem";
+import PostModal from "@/components/PostModal";
 import ResponsiveLayout from "@/components/shared/ResponsiveLayout";
-import { ProfileSkeleton, PostListSkeleton } from "@/components/shared/LoadingSkeletons";
-import { type UserProfile, type PostsResponse, type TabType } from "@/types";
+import { api } from "@/convex/_generated/api";
+import { type PostsResponse, type TabType, type UserProfile } from "@/types";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function ProfilePage() {
   const params = useParams();
@@ -263,7 +262,7 @@ export default function ProfilePage() {
                     {profile.isOwnProfile ? (
                       <p className="text-xs">Your replies to other posts will appear here</p>
                     ) : (
-                      <p className="text-xs">@{profile.username}'s replies will appear here</p>
+                      <p className="text-xs">@{profile.username}&apos;s replies will appear here</p>
                     )}
                   </div>
                 ) : (
@@ -282,7 +281,7 @@ export default function ProfilePage() {
                     {profile.isOwnProfile ? (
                       <p className="text-xs">Posts you like will appear here</p>
                     ) : (
-                      <p className="text-xs">@{profile.username}'s liked posts will appear here</p>
+                      <p className="text-xs">@{profile.username}&apos;s liked posts will appear here</p>
                     )}
                   </div>
                 ) : (

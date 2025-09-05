@@ -2,6 +2,7 @@
 
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -18,10 +19,10 @@ export default function MessagesPage() {
   const [newConversation, setNewConversation] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showPostModal, setShowPostModal] = useState(false);
-  
+
   const conversations = useQuery(api.messages.getUserConversations);
   const searchResults = useQuery(
-    api.messages.searchUsersForMessage, 
+    api.messages.searchUsersForMessage,
     searchTerm.trim() ? { searchTerm } : "skip"
   );
 
@@ -44,7 +45,7 @@ export default function MessagesPage() {
     <div className="min-h-screen bg-background text-foreground font-mono">
       <div className="max-w-7xl mx-auto flex">
         <Sidebar onPostClick={() => setShowPostModal(true)} />
-        
+
         <main className="flex-1 flex border-r border-foreground/20">
           {/* Conversations List */}
           <div className={`w-96 border-r border-foreground/20 flex flex-col ${selectedConversationId ? 'hidden md:flex' : 'flex'}`}>
@@ -68,11 +69,6 @@ export default function MessagesPage() {
                 setSearchTerm={setSearchTerm}
                 searchResults={searchResults}
                 onClose={() => {
-                  setNewConversation(false);
-                  setSearchTerm("");
-                }}
-                onSelectUser={(userId) => {
-                  // This will be handled by the NewConversationModal component
                   setNewConversation(false);
                   setSearchTerm("");
                 }}
@@ -114,8 +110,8 @@ export default function MessagesPage() {
           {/* Chat Area */}
           <div className={`flex-1 flex flex-col ${selectedConversationId ? 'flex' : 'hidden md:flex'}`}>
             {selectedConversation ? (
-              <ChatArea 
-                conversation={selectedConversation} 
+              <ChatArea
+                conversation={selectedConversation}
                 onBack={() => setSelectedConversationId(null)}
               />
             ) : (
@@ -136,9 +132,9 @@ export default function MessagesPage() {
 
         <RightPanel />
       </div>
-      <PostModal 
-        isOpen={showPostModal} 
-        onClose={() => setShowPostModal(false)} 
+      <PostModal
+        isOpen={showPostModal}
+        onClose={() => setShowPostModal(false)}
       />
     </div>
   );
@@ -165,30 +161,29 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
         <Link href="/feed" className="text-2xl font-bold px-3 block">
           [ X ]
         </Link>
-        
+
         <div className="space-y-2">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center justify-between px-3 py-2 hover:bg-foreground/10 transition-colors text-sm ${
-                item.label === "MESSAGES" ? "bg-foreground/10 font-bold" : ""
-              }`}
+              className={`flex items-center justify-between px-3 py-2 hover:bg-foreground/10 transition-colors text-sm ${item.label === "MESSAGES" ? "bg-foreground/10 font-bold" : ""
+                }`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-6 text-center">{item.icon}</span>
                 <span>{item.label}</span>
               </div>
-              {item.badge > 0 && (
+              {item.badge && item.badge > 0 && (
                 <span className="bg-foreground text-background text-xs px-2 py-1 rounded-full min-w-[20px] text-center">
-                  {item.badge > 99 ? "99+" : item.badge}
+                  {item.badge && item.badge > 99 ? "99+" : item.badge}
                 </span>
               )}
             </Link>
           ))}
         </div>
 
-        <button 
+        <button
           onClick={onPostClick}
           className="w-full px-4 py-3 bg-foreground text-background hover:bg-foreground/90 transition-colors text-sm font-bold"
         >
@@ -214,24 +209,25 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
   );
 }
 
-function ConversationItem({ 
-  conversation, 
-  isSelected, 
-  onClick 
-}: { 
-  conversation: any; 
-  isSelected: boolean; 
-  onClick: () => void; 
+function ConversationItem({
+  conversation,
+  isSelected,
+  onClick
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  conversation: any;
+  isSelected: boolean;
+  onClick: () => void;
 }) {
   const formatTimestamp = (timestamp: number) => {
     const now = Date.now();
     const diff = now - timestamp;
     const days = Math.floor(diff / 86400000);
-    
+
     if (days === 0) {
       const hours = Math.floor(diff / 3600000);
       const minutes = Math.floor(diff / 60000);
-      
+
       if (hours === 0) {
         if (minutes === 0) return "now";
         return `${minutes}m`;
@@ -246,16 +242,15 @@ function ConversationItem({
   return (
     <button
       onClick={onClick}
-      className={`w-full p-4 text-left hover:bg-foreground/5 transition-colors border-b border-foreground/10 ${
-        isSelected ? "bg-foreground/10" : ""
-      }`}
+      className={`w-full p-4 text-left hover:bg-foreground/5 transition-colors border-b border-foreground/10 ${isSelected ? "bg-foreground/10" : ""
+        }`}
     >
       <div className="flex gap-3">
         <div className="w-10 h-10 border border-foreground/40 flex items-center justify-center text-xs flex-shrink-0 overflow-hidden">
           {conversation.otherUser?.avatarUrl ? (
-            <img 
-              src={conversation.otherUser.avatarUrl} 
-              alt="Avatar" 
+            <img
+              src={conversation.otherUser.avatarUrl}
+              alt="Avatar"
               className="w-full h-full object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
@@ -295,26 +290,25 @@ function ConversationItem({
   );
 }
 
-function NewConversationModal({ 
-  searchTerm, 
-  setSearchTerm, 
-  searchResults, 
-  onClose, 
-  onSelectUser,
-  onConversationCreated 
+function NewConversationModal({
+  searchTerm,
+  setSearchTerm,
+  searchResults,
+  onClose,
+  onConversationCreated
 }: {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   searchResults: any[] | undefined;
   onClose: () => void;
-  onSelectUser: (userId: string) => void;
   onConversationCreated: (conversationId: string) => void;
 }) {
   const getOrCreateConversation = useMutation(api.messages.getOrCreateConversation);
 
   const handleSelectUser = async (userId: string) => {
     try {
-      const conversationId = await getOrCreateConversation({ otherUserId: userId });
+      const conversationId = await getOrCreateConversation({ otherUserId: userId as Id<"users"> });
       onConversationCreated(conversationId);
     } catch (error) {
       console.error("Failed to create conversation:", error);
@@ -325,7 +319,7 @@ function NewConversationModal({
     <div className="absolute inset-0 bg-background/95 backdrop-blur z-10">
       <div className="p-4 border-b border-foreground/20">
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={onClose}
             className="hover:bg-foreground/10 p-2 -m-2 transition-colors"
           >
@@ -334,7 +328,7 @@ function NewConversationModal({
           <h2 className="font-bold">NEW MESSAGE</h2>
         </div>
       </div>
-      
+
       <div className="p-4">
         <input
           type="text"
@@ -356,9 +350,9 @@ function NewConversationModal({
             <div className="flex gap-3 items-center">
               <div className="w-10 h-10 border border-foreground/40 flex items-center justify-center text-xs overflow-hidden">
                 {user.avatarUrl ? (
-                  <img 
-                    src={user.avatarUrl} 
-                    alt="Avatar" 
+                  <img
+                    src={user.avatarUrl}
+                    alt="Avatar"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -372,10 +366,10 @@ function NewConversationModal({
             </div>
           </button>
         ))}
-        
+
         {searchTerm && !searchResults?.length && (
           <div className="p-4 text-center text-foreground/60 text-sm">
-            No users found matching "{searchTerm}"
+            No users found matching &quot;{searchTerm}&quot;
           </div>
         )}
       </div>
@@ -383,13 +377,14 @@ function NewConversationModal({
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ChatArea({ conversation, onBack }: { conversation: any; onBack: () => void }) {
   const [messageText, setMessageText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const messages = useQuery(api.messages.getMessages, { 
-    conversationId: conversation._id 
+
+  const messages = useQuery(api.messages.getMessages, {
+    conversationId: conversation._id
   });
   const sendMessage = useMutation(api.messages.sendMessage);
   const markAsRead = useMutation(api.messages.markMessagesAsRead);
@@ -408,7 +403,7 @@ function ChatArea({ conversation, onBack }: { conversation: any; onBack: () => v
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const trimmedText = messageText.trim();
     if (!trimmedText || isSending) return;
 
@@ -427,9 +422,9 @@ function ChatArea({ conversation, onBack }: { conversation: any; onBack: () => v
   };
 
   const formatTimestamp = (timestamp: number) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -438,16 +433,17 @@ function ChatArea({ conversation, onBack }: { conversation: any; onBack: () => v
   };
 
   // Group messages by date
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const groupedMessages = messages?.messages?.reduce((groups: any[], message: any) => {
     const date = formatDate(message.createdAt);
     const lastGroup = groups[groups.length - 1];
-    
+
     if (lastGroup && lastGroup.date === date) {
       lastGroup.messages.push(message);
     } else {
       groups.push({ date, messages: [message] });
     }
-    
+
     return groups;
   }, []) || [];
 
@@ -456,7 +452,7 @@ function ChatArea({ conversation, onBack }: { conversation: any; onBack: () => v
       {/* Chat Header */}
       <div className="sticky top-0 bg-background/95 backdrop-blur border-b border-foreground/20 p-4">
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={onBack}
             className="hover:bg-foreground/10 p-2 -m-2 transition-colors md:hidden"
           >
@@ -464,9 +460,9 @@ function ChatArea({ conversation, onBack }: { conversation: any; onBack: () => v
           </button>
           <div className="w-8 h-8 border border-foreground/40 flex items-center justify-center text-xs overflow-hidden">
             {conversation.otherUser?.avatarUrl ? (
-              <img 
-                src={conversation.otherUser.avatarUrl} 
-                alt="Avatar" 
+              <img
+                src={conversation.otherUser.avatarUrl}
+                alt="Avatar"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -490,22 +486,21 @@ function ChatArea({ conversation, onBack }: { conversation: any; onBack: () => v
               </span>
             </div>
             <div className="space-y-3">
-              {group.messages.map((message: any) => (
+              {              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              }              {group.messages.map((message: any) => (
                 <div
                   key={message._id}
                   className={`flex ${message.isOwn ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-xs px-3 py-2 text-sm ${
-                      message.isOwn
-                        ? 'bg-foreground text-background'
-                        : 'bg-foreground/10 text-foreground'
-                    }`}
+                    className={`max-w-xs px-3 py-2 text-sm ${message.isOwn
+                      ? 'bg-foreground text-background'
+                      : 'bg-foreground/10 text-foreground'
+                      }`}
                   >
                     <p>{message.content}</p>
-                    <p className={`text-xs mt-1 ${
-                      message.isOwn ? 'text-background/60' : 'text-foreground/60'
-                    }`}>
+                    <p className={`text-xs mt-1 ${message.isOwn ? 'text-background/60' : 'text-foreground/60'
+                      }`}>
                       {formatTimestamp(message.createdAt)}
                     </p>
                   </div>
@@ -559,8 +554,8 @@ function RightPanel() {
       <div className="border border-foreground/20 p-4">
         <h3 className="font-bold text-sm mb-3">ABOUT MESSAGES</h3>
         <p className="text-xs text-foreground/60 leading-relaxed">
-          Send private messages to other users. Messages are delivered in real-time 
-          and you can see when they've been read.
+          Send private messages to other users. Messages are delivered in real-time
+          and you can see when they&apos;ve been read.
         </p>
       </div>
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useState, useRef, useEffect } from "react";
-import { type UserProfile, type QuoteTweetData } from "@/types";
+import { Id } from "@/convex/_generated/dataModel";
+import { type QuoteTweetData, type UserProfile } from "@/types";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import { useEffect, useRef, useState } from "react";
 
 interface PostModalProps {
   isOpen: boolean;
@@ -19,8 +20,6 @@ interface PostModalProps {
   };
   quoteTweet?: QuoteTweetData;
 }
-
-interface UserSuggestion extends Pick<UserProfile, '_id' | 'userId' | 'username' | 'displayName' | 'avatarUrl'> {}
 
 export default function PostModal({ isOpen, onClose, replyTo, quoteTweet }: PostModalProps) {
   const { isAuthenticated } = useConvexAuth();
@@ -77,8 +76,8 @@ export default function PostModal({ isOpen, onClose, replyTo, quoteTweet }: Post
     try {
       await createPost({
         content: content.trim(),
-        replyToId: replyTo?.id as any,
-        quotedPostId: quoteTweet?.id as any,
+        replyToId: replyTo?.id as Id<"posts"> | undefined,
+        quotedPostId: quoteTweet?.id as Id<"posts"> | undefined,
       });
       
       setContent("");

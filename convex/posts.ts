@@ -396,10 +396,28 @@ export const getPostById = query({
       }
     }
 
+    // Get quoted post if this is a quote tweet
+    let quotedPost: any = null;
+    if (post.quotedPostId) {
+      const quoted = await ctx.db.get(post.quotedPostId);
+      if (quoted) {
+        const quotedAuthorProfile = await ctx.db
+          .query("profiles")
+          .withIndex("by_userId", (q) => q.eq("userId", quoted.authorId))
+          .first();
+        const enrichedQuotedAuthor = await enrichAuthorProfile(ctx, quotedAuthorProfile);
+        quotedPost = {
+          ...quoted,
+          author: enrichedQuotedAuthor,
+        };
+      }
+    }
+
     return {
       ...post,
       author: enrichedAuthor,
       parentPost,
+      quotedPost,
       liked,
       reposted,
       bookmarked,

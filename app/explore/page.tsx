@@ -22,11 +22,11 @@ export default function ExplorePage() {
   const trendingPosts = useQuery(api.posts.getTrendingPosts, { limit: 20 });
   const trendingHashtags = useQuery(api.posts.getTrendingHashtags, { limit: 10 });
   const searchedPosts = useQuery(
-    api.posts.searchPosts, 
+    api.posts.searchPosts,
     searchTerm.length > 0 && searchType === "posts" ? { searchTerm, limit: 20 } : "skip"
   );
   const searchedUsers = useQuery(
-    api.profiles.searchProfiles, 
+    api.profiles.searchProfiles,
     searchTerm.length > 0 && searchType === "users" ? { searchTerm, limit: 20 } : "skip"
   );
 
@@ -54,7 +54,7 @@ export default function ExplorePage() {
     <div className="min-h-screen bg-background text-foreground font-mono">
       <div className="max-w-7xl mx-auto flex">
         <Sidebar onPostClick={() => setShowPostModal(true)} />
-        
+
         <main className="flex-1 border-r border-foreground/20">
           {/* Header with Search */}
           <div className="sticky top-0 bg-background/95 backdrop-blur border-b border-foreground/20">
@@ -74,26 +74,24 @@ export default function ExplorePage() {
                   SEARCH
                 </button>
               </form>
-              
+
               {searchTerm && (
                 <div className="flex gap-2 mt-3">
                   <button
                     onClick={() => setSearchType("posts")}
-                    className={`px-3 py-1 text-xs border ${
-                      searchType === "posts" 
-                        ? "bg-foreground text-background border-foreground" 
-                        : "border-foreground/20 hover:border-foreground/40"
-                    } transition-colors`}
+                    className={`px-3 py-1 text-xs border ${searchType === "posts"
+                      ? "bg-foreground text-background border-foreground"
+                      : "border-foreground/20 hover:border-foreground/40"
+                      } transition-colors`}
                   >
                     POSTS
                   </button>
                   <button
                     onClick={() => setSearchType("users")}
-                    className={`px-3 py-1 text-xs border ${
-                      searchType === "users" 
-                        ? "bg-foreground text-background border-foreground" 
-                        : "border-foreground/20 hover:border-foreground/40"
-                    } transition-colors`}
+                    className={`px-3 py-1 text-xs border ${searchType === "users"
+                      ? "bg-foreground text-background border-foreground"
+                      : "border-foreground/20 hover:border-foreground/40"
+                      } transition-colors`}
                   >
                     USERS
                   </button>
@@ -105,21 +103,19 @@ export default function ExplorePage() {
             <div className="flex">
               <button
                 onClick={() => setActiveTab("trending")}
-                className={`flex-1 py-3 text-sm hover:bg-foreground/5 transition-colors ${
-                  activeTab === "trending"
-                    ? "border-b-2 border-foreground font-bold"
-                    : "text-foreground/60"
-                }`}
+                className={`flex-1 py-3 text-sm hover:bg-foreground/5 transition-colors ${activeTab === "trending"
+                  ? "border-b-2 border-foreground font-bold"
+                  : "text-foreground/60"
+                  }`}
               >
                 TRENDING
               </button>
               <button
                 onClick={() => setActiveTab("search")}
-                className={`flex-1 py-3 text-sm hover:bg-foreground/5 transition-colors ${
-                  activeTab === "search"
-                    ? "border-b-2 border-foreground font-bold"
-                    : "text-foreground/60"
-                }`}
+                className={`flex-1 py-3 text-sm hover:bg-foreground/5 transition-colors ${activeTab === "search"
+                  ? "border-b-2 border-foreground font-bold"
+                  : "text-foreground/60"
+                  }`}
               >
                 SEARCH RESULTS
               </button>
@@ -159,7 +155,7 @@ export default function ExplorePage() {
                 {!trendingPosts?.posts?.length ? (
                   <div className="p-8 text-center text-foreground/60">
                     <p className="text-sm mb-2">No trending posts yet</p>
-                    <p className="text-xs">Check back later for what's popular!</p>
+                    <p className="text-xs">Check back later for what&apos;s popular!</p>
                   </div>
                 ) : (
                   trendingPosts.posts.map((post) => (
@@ -175,7 +171,7 @@ export default function ExplorePage() {
                 <div className="divide-y divide-foreground/20">
                   {searchTerm && !searchedPosts?.posts?.length ? (
                     <div className="p-8 text-center text-foreground/60">
-                      <p className="text-sm mb-2">No posts found for "{searchTerm}"</p>
+                      <p className="text-sm mb-2">No posts found for &quot;{searchTerm}&quot;</p>
                       <p className="text-xs">Try searching for something else</p>
                     </div>
                   ) : searchTerm ? (
@@ -192,7 +188,7 @@ export default function ExplorePage() {
                 <div className="divide-y divide-foreground/20">
                   {searchTerm && !searchedUsers?.length ? (
                     <div className="p-8 text-center text-foreground/60">
-                      <p className="text-sm mb-2">No users found for "{searchTerm}"</p>
+                      <p className="text-sm mb-2">No users found for &quot;{searchTerm}&quot;</p>
                       <p className="text-xs">Try searching for something else</p>
                     </div>
                   ) : searchTerm ? (
@@ -212,9 +208,9 @@ export default function ExplorePage() {
 
         <RightPanel />
       </div>
-      <PostModal 
-        isOpen={showPostModal} 
-        onClose={() => setShowPostModal(false)} 
+      <PostModal
+        isOpen={showPostModal}
+        onClose={() => setShowPostModal(false)}
       />
     </div>
   );
@@ -241,30 +237,29 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
         <Link href="/feed" className="text-2xl font-bold px-3 block">
           [ X ]
         </Link>
-        
+
         <div className="space-y-2">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center justify-between px-3 py-2 hover:bg-foreground/10 transition-colors text-sm ${
-                item.label === "EXPLORE" ? "bg-foreground/10 font-bold" : ""
-              }`}
+              className={`flex items-center justify-between px-3 py-2 hover:bg-foreground/10 transition-colors text-sm ${item.label === "EXPLORE" ? "bg-foreground/10 font-bold" : ""
+                }`}
             >
               <div className="flex items-center gap-3">
                 <span className="w-6 text-center">{item.icon}</span>
                 <span>{item.label}</span>
               </div>
-              {item.badge > 0 && (
+              {item.badge && item.badge > 0 && (
                 <span className="bg-foreground text-background text-xs px-2 py-1 rounded-full min-w-[20px] text-center">
-                  {item.badge > 99 ? "99+" : item.badge}
+                  {item.badge && item.badge > 99 ? "99+" : item.badge}
                 </span>
               )}
             </Link>
           ))}
         </div>
 
-        <button 
+        <button
           onClick={onPostClick}
           className="w-full px-4 py-3 bg-foreground text-background hover:bg-foreground/90 transition-colors text-sm font-bold"
         >
@@ -289,14 +284,15 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
     </nav>
   );
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function PostItem({ post }: { post: any }) {
   const router = useRouter();
   const [liked, setLiked] = useState(post.liked);
   const [reposted, setReposted] = useState(post.reposted);
   const [bookmarked, setBookmarked] = useState(post.bookmarked);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [showQuoteModal, setShowQuoteModal] = useState(false);
-  
+
   const likeMutation = useMutation(api.posts.likePost);
   const unlikeMutation = useMutation(api.posts.unlikePost);
   const repostMutation = useMutation(api.posts.repostPost);
@@ -369,7 +365,7 @@ function PostItem({ post }: { post: any }) {
   };
 
   return (
-    <article 
+    <article
       className="p-4 hover:bg-foreground/5 transition-colors cursor-pointer"
       onClick={(e) => {
         if (!(e.target as HTMLElement).closest('button, a')) {
@@ -381,9 +377,9 @@ function PostItem({ post }: { post: any }) {
         <Link href={`/profile/${post.author?.username}`}>
           <div className="w-10 h-10 border border-foreground/40 flex items-center justify-center text-xs hover:border-foreground transition-colors overflow-hidden">
             {post.author?.avatarUrl ? (
-              <img 
-                src={post.author.avatarUrl} 
-                alt="Avatar" 
+              <img
+                src={post.author.avatarUrl}
+                alt="Avatar"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -415,14 +411,14 @@ function PostItem({ post }: { post: any }) {
             )}
           </div>
           <PostContent content={post.content} className="mt-1 text-sm" />
-          
+
           {/* Quoted Post */}
           {post.quotedPost && (
             <QuotedPost quotedPost={post.quotedPost} />
           )}
 
           <div className="flex gap-6 mt-3 text-xs text-foreground/60">
-            <button 
+            <button
               onClick={(e) => e.stopPropagation()}
               className="flex items-center gap-1 hover:text-foreground"
             >
@@ -468,7 +464,7 @@ function PostItem({ post }: { post: any }) {
             >
               <span>📝</span>
             </button>
-            <button 
+            <button
               onClick={(e) => e.stopPropagation()}
               className="hover:text-foreground"
             >
@@ -477,7 +473,7 @@ function PostItem({ post }: { post: any }) {
           </div>
         </div>
       </div>
-      
+
       <PostModal
         isOpen={showQuoteModal}
         onClose={() => setShowQuoteModal(false)}
@@ -496,9 +492,11 @@ function PostItem({ post }: { post: any }) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function UserItem({ user }: { user: any }) {
   const followMutation = useMutation(api.profiles.followUser);
   const unfollowMutation = useMutation(api.profiles.unfollowUser);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [following, setFollowing] = useState(user.isFollowing);
 
   const handleFollow = async () => {
@@ -520,9 +518,9 @@ function UserItem({ user }: { user: any }) {
         <Link href={`/profile/${user.username}`}>
           <div className="w-12 h-12 border border-foreground/40 flex items-center justify-center text-sm hover:border-foreground transition-colors overflow-hidden">
             {user.avatarUrl ? (
-              <img 
-                src={user.avatarUrl} 
-                alt="Avatar" 
+              <img
+                src={user.avatarUrl}
+                alt="Avatar"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -538,11 +536,10 @@ function UserItem({ user }: { user: any }) {
             </Link>
             <button
               onClick={handleFollow}
-              className={`px-3 py-1 text-xs border transition-colors ${
-                following
-                  ? "border-foreground/20 hover:border-red-500 hover:text-red-500"
-                  : "border-foreground bg-foreground text-background hover:bg-foreground/90"
-              }`}
+              className={`px-3 py-1 text-xs border transition-colors ${following
+                ? "border-foreground/20 hover:border-red-500 hover:text-red-500"
+                : "border-foreground bg-foreground text-background hover:bg-foreground/90"
+                }`}
             >
               {following ? "UNFOLLOW" : "FOLLOW"}
             </button>
@@ -572,15 +569,15 @@ function RightPanel() {
           <h3 className="font-bold text-sm">WHO TO FOLLOW</h3>
           {suggestions.map((user) => (
             <div key={user._id} className="flex items-center justify-between">
-              <Link 
+              <Link
                 href={`/profile/${user.username}`}
                 className="flex gap-2 items-center hover:opacity-80"
               >
                 <div className="w-8 h-8 border border-foreground/40 flex items-center justify-center text-xs overflow-hidden">
                   {user.avatarUrl ? (
-                    <img 
-                      src={user.avatarUrl} 
-                      alt="Avatar" 
+                    <img
+                      src={user.avatarUrl}
+                      alt="Avatar"
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -592,7 +589,7 @@ function RightPanel() {
                   <p className="text-foreground/60">@{user.username}</p>
                 </div>
               </Link>
-              <button 
+              <button
                 onClick={() => followMutation({ targetUserId: user.userId })}
                 className="px-3 py-1 border border-foreground text-xs hover:bg-foreground hover:text-background transition-colors"
               >
@@ -616,7 +613,7 @@ function RightPanel() {
       <div className="border border-foreground/20 p-4">
         <h3 className="font-bold text-sm mb-3">ABOUT EXPLORE</h3>
         <p className="text-xs text-foreground/60 leading-relaxed">
-          Discover what's trending in your network. Find new people to follow and 
+          Discover what&apos;s trending in your network. Find new people to follow and
           explore conversations happening right now.
         </p>
       </div>

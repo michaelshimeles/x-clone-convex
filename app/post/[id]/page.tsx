@@ -1,14 +1,16 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import Link from "next/link";
-import { useState } from "react";
-import { useAuthActions } from "@convex-dev/auth/react";
-import PostModal from "@/components/PostModal";
 import PostContent from "@/components/PostContent";
+import PostModal from "@/components/PostModal";
 import QuotedPost from "@/components/QuotedPost";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { QuoteTweetData } from "@/types";
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -16,12 +18,11 @@ export default function PostDetailPage() {
   const { isAuthenticated, isLoading: authLoading } = useConvexAuth();
   const router = useRouter();
   const [showPostModal, setShowPostModal] = useState(false);
-  const [replyTo, setReplyTo] = useState<any>(null);
+  const [replyTo, setReplyTo] = useState<QuoteTweetData | null>(null);
 
-  const post = useQuery(api.posts.getPostById, { postId: postId as any });
-  const replies = useQuery(api.posts.getPostReplies, { postId: postId as any });
+  const post = useQuery(api.posts.getPostById, { postId: postId as Id<"posts"> });
+  const replies = useQuery(api.posts.getPostReplies, { postId: postId as Id<"posts"> });
   const currentUser = useQuery(api.profiles.getCurrentUserProfile);
-  const unreadCount = useQuery(api.notifications.getUnreadNotificationCount);
 
   const likeMutation = useMutation(api.posts.likePost);
   const unlikeMutation = useMutation(api.posts.unlikePost);
@@ -106,6 +107,7 @@ export default function PostDetailPage() {
   const handleReply = () => {
     setReplyTo({
       id: post._id,
+      createdAt: post.createdAt,
       author: {
         displayName: post.author?.displayName,
         username: post.author?.username,
@@ -324,7 +326,7 @@ export default function PostDetailPage() {
           setShowPostModal(false);
           setReplyTo(null);
         }}
-        replyTo={replyTo}
+        replyTo={replyTo || undefined}
       />
     </div>
   );
@@ -363,9 +365,9 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
                 <span className="w-6 text-center">{item.icon}</span>
                 <span>{item.label}</span>
               </div>
-              {item.badge > 0 && (
+              {item.badge && item.badge > 0 && (
                 <span className="bg-foreground text-background text-xs px-2 py-1 rounded-full min-w-[20px] text-center">
-                  {item.badge > 99 ? "99+" : item.badge}
+                  {item.badge && item.badge > 99 ? "99+" : item.badge}
                 </span>
               )}
             </Link>
@@ -398,6 +400,7 @@ function Sidebar({ onPostClick }: { onPostClick: () => void }) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ReplyItem({ reply }: { reply: any }) {
   const router = useRouter();
   const [liked, setLiked] = useState(reply.liked);

@@ -1,13 +1,13 @@
 "use client";
 
+import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAuth } from "convex/react";
 import Link from "next/link";
-import { useAuthActions } from "@convex-dev/auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { isAuthenticated } = useConvexAuth();
 
   return (
     <div className="min-h-screen bg-background text-foreground font-mono flex flex-col">
@@ -25,7 +25,6 @@ export default function Home() {
 
 function Header({ isAuthenticated }: { isAuthenticated?: boolean }) {
   const { signOut } = useAuthActions();
-  const router = useRouter();
 
   return (
     <header className="p-6 border-b border-foreground/20">
@@ -84,7 +83,6 @@ function Feature({ text }: { text: string }) {
 
 function RightSection({ isAuthenticated }: { isAuthenticated?: boolean }) {
   const [isSignUp, setIsSignUp] = useState(false);
-  const router = useRouter();
 
   if (isAuthenticated) {
     return (
@@ -95,7 +93,7 @@ function RightSection({ isAuthenticated }: { isAuthenticated?: boolean }) {
               WELCOME BACK
             </h3>
             <p className="text-sm text-foreground/60">
-              You're already signed in
+              You&apos;re already signed in
             </p>
           </div>
 
@@ -128,8 +126,8 @@ function RightSection({ isAuthenticated }: { isAuthenticated?: boolean }) {
           </h3>
           <p className="text-xs text-foreground/60">
             {isSignUp
-              ? "It's free and only takes a minute"
-              : "Stay updated on what's happening"}
+              ? "It&apos;s free and only takes a minute"
+              : "Stay updated on what&apos;s happening"}
           </p>
         </div>
 

@@ -5,6 +5,8 @@ import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { UserProfile } from "@/types";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function FollowersPage() {
   const params = useParams();
@@ -14,9 +16,9 @@ export default function FollowersPage() {
 
   const profile = useQuery(api.profiles.getProfileByUsername, { username });
   const followers = useQuery(api.profiles.getFollowers, { 
-    userId: profile?.userId!,
+    userId: profile?.userId as Id<"users">,
     limit: 100 
-  }, profile?.userId ? undefined : "skip");
+  });
   
   const followUser = useMutation(api.profiles.followUser);
   const unfollowUser = useMutation(api.profiles.unfollowUser);
@@ -52,9 +54,9 @@ export default function FollowersPage() {
     
     try {
       if (isFollowing) {
-        await unfollowUser({ targetUserId: targetUserId as any });
+        await unfollowUser({ targetUserId: targetUserId as Id<"users"> });
       } else {
-        await followUser({ targetUserId: targetUserId as any });
+        await followUser({ targetUserId: targetUserId as Id<"users"> });
       }
     } catch (error) {
       console.error("Follow/unfollow error:", error);
@@ -106,14 +108,14 @@ export default function FollowersPage() {
             {followers.length === 0 ? (
               <div className="p-8 text-center text-foreground/60 text-sm">
                 <p className="mb-2">No followers yet</p>
-                <p className="text-xs">When people follow @{profile.username}, they'll appear here</p>
+                <p className="text-xs">When people follow @{profile.username}, they&apos;ll appear here</p>
               </div>
             ) : (
               followers.map((follower) => (
                 <UserItem 
                   key={follower._id} 
                   user={follower} 
-                  currentUser={currentUser}
+                  currentUser={currentUser as UserProfile}
                   onFollow={handleFollow}
                 />
               ))
@@ -132,8 +134,8 @@ function UserItem({
   currentUser, 
   onFollow 
 }: { 
-  user: any; 
-  currentUser: any; 
+  user: UserProfile; 
+  currentUser: UserProfile; 
   onFollow: (userId: string, isFollowing: boolean) => void;
 }) {
   // Check if current user is following this user
@@ -168,7 +170,6 @@ function UserItem({
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-sm">{user.displayName}</h3>
-              {user.verified && <span className="text-xs">✓</span>}
             </div>
             <p className="text-sm text-foreground/60">@{user.username}</p>
             {user.bio && (

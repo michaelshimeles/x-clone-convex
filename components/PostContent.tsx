@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { JSX } from "react";
 
 interface PostContentProps {
   content: string;

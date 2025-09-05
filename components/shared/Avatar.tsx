@@ -34,7 +34,7 @@ export default function Avatar({
       {user.avatarUrl ? (
         <img
           src={user.avatarUrl}
-          alt={`${user.displayName || user.username}'s avatar`}
+          alt={`${user.displayName || user.username}&apos;s avatar`}
           className="w-full h-full object-cover"
           onError={(e) => {
             (e.target as HTMLImageElement).style.display = 'none';
