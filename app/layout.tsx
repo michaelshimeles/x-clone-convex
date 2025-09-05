@@ -37,7 +37,6 @@ export default function RootLayout({
         >
           <ErrorBoundary>
             <ConvexClientProvider>{children}
-
               <Analytics />
             </ConvexClientProvider>
           </ErrorBoundary>
