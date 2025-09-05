@@ -4,6 +4,8 @@ import "./globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { Analytics } from "@vercel/analytics/next"
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,7 +36,10 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ErrorBoundary>
-            <ConvexClientProvider>{children}</ConvexClientProvider>
+            <ConvexClientProvider>{children}
+
+              <Analytics />
+            </ConvexClientProvider>
           </ErrorBoundary>
         </body>
       </html>
