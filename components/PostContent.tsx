@@ -79,7 +79,7 @@ export default function PostContent({ content, className = "" }: PostContentProp
 
   return (
     <div>
-      <p className={`whitespace-pre-wrap max-w-xl break-words ${className}`}>
+      <p className={`whitespace-pre-wrap max-w-md break-words ${className}`}>
         {parseContent(displayContent)}
         {shouldTruncate && !expanded && "..."}
       </p>
