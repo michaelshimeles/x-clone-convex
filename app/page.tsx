@@ -135,7 +135,7 @@ function RightSection({ isAuthenticated }: { isAuthenticated?: boolean }) {
 
         <div className="pt-4 border-t border-foreground/20">
           <p className="text-xs text-center">
-            {isSignUp ? "Already have an account?" : "Don't have an account?"}
+            {isSignUp ? "Have an account?" : "Don't have an account?"}
             <button
               onClick={() => setIsSignUp(!isSignUp)}
               className="ml-2 underline hover:no-underline"

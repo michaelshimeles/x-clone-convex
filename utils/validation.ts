@@ -47,8 +47,8 @@ export function validatePostContent(content: string): { isValid: boolean; error?
     return { isValid: false, error: "Post content cannot be empty" };
   }
   
-  if (content.length > 280) {
-    return { isValid: false, error: "Post content exceeds 280 characters" };
+  if (content.length > 240) {
+    return { isValid: false, error: "Post content exceeds 240 characters" };
   }
   
   return { isValid: true };

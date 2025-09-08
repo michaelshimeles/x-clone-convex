@@ -160,9 +160,9 @@ export const createPost = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Validate content length (280 characters max)
-    if (args.content.length > 280) {
-      throw new Error("Post content exceeds 280 characters");
+    // Validate content length (240 characters max)
+    if (args.content.length > 240) {
+      throw new Error("Post content exceeds 240 characters");
     }
 
     // Extract mentions from content

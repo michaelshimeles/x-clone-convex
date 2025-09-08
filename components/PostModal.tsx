@@ -39,7 +39,7 @@ export default function PostModal({ isOpen, onClose, replyTo, quoteTweet }: Post
     suggestionQuery.length > 0 ? { searchTerm: suggestionQuery, limit: 5 } : "skip"
   );
 
-  const maxLength = 280;
+  const maxLength = 240;
 
   // Auto-focus textarea when modal opens
   useEffect(() => {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 
 interface PostContentProps {
   content: string;
@@ -9,6 +9,15 @@ interface PostContentProps {
 }
 
 export default function PostContent({ content, className = "" }: PostContentProps) {
+  const [expanded, setExpanded] = useState(false);
+  const maxLength = 240;
+  const shouldTruncate = content.length > maxLength;
+  
+  // Determine the content to display
+  const displayContent = shouldTruncate && !expanded 
+    ? content.slice(0, maxLength) 
+    : content;
+  
   // Parse content for mentions, hashtags, and links
   const parseContent = (text: string) => {
     const parts: (string | JSX.Element)[] = [];
@@ -69,8 +78,22 @@ export default function PostContent({ content, className = "" }: PostContentProp
   };
 
   return (
-    <p className={`whitespace-pre-wrap ${className}`}>
-      {parseContent(content)}
-    </p>
+    <div>
+      <p className={`whitespace-pre-wrap max-w-xl break-words ${className}`}>
+        {parseContent(displayContent)}
+        {shouldTruncate && !expanded && "..."}
+      </p>
+      {shouldTruncate && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(!expanded);
+          }}
+          className="text-blue-500 hover:underline text-sm mt-1"
+        >
+          {expanded ? "See less" : "See more"}
+        </button>
+      )}
+    </div>
   );
 }
